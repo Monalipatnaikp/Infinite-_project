@@ -1,0 +1,65 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace day1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //fun();
+            Program pg = new Program();
+            //pg.CheckGrade();
+            pg.CheckGradeSwitch();
+            Console.ReadLine();
+        }
+        public static void fun()
+        {
+            int? ticketsonsale = null;
+            int availabletickets;
+            if (ticketsonsale == null)
+            {
+                availabletickets = 0;
+            }
+            else
+                availabletickets = ticketsonsale.Value;
+            Console.WriteLine($"HI{ticketsonsale} AND {availabletickets}");
+        }
+        public void CheckGrade()
+        {
+            char grade;
+            Console.WriteLine("Enter grade");
+            grade = Convert.ToChar(Console.ReadLine());
+            if (grade == 'o')
+                Console.WriteLine("outstanding");
+            else if (grade == 'a')
+                Console.WriteLine("verygood");
+            else
+                Console.WriteLine("NOT VALID");
+        }
+        public void CheckGradeSwitch()
+        {
+            char grade;
+            Console.WriteLine("Enter grade");
+            grade = Convert.ToChar(Console.ReadLine());
+            switch (grade)
+            {
+                case 'a':
+                case 'A':
+                    Console.WriteLine("outstandind");
+                    break;
+                case 'b':
+                case 'B':
+                    Console.WriteLine("very good");
+                    break;
+                case 'o':
+                case 'O':
+                    Console.WriteLine("good");
+                    break;
+            }
+        }
+    }
+}
