@@ -1,0 +1,7 @@
+C:\monali\infinite\csharp\assignments\assign 5\assign 5\bin\Debug\assign 5.exe.config
+C:\monali\infinite\csharp\assignments\assign 5\assign 5\bin\Debug\assign 5.exe
+C:\monali\infinite\csharp\assignments\assign 5\assign 5\bin\Debug\assign 5.pdb
+C:\monali\infinite\csharp\assignments\assign 5\assign 5\obj\Debug\assign 5.csproj.AssemblyReference.cache
+C:\monali\infinite\csharp\assignments\assign 5\assign 5\obj\Debug\assign 5.csproj.CoreCompileInputs.cache
+C:\monali\infinite\csharp\assignments\assign 5\assign 5\obj\Debug\assign 5.exe
+C:\monali\infinite\csharp\assignments\assign 5\assign 5\obj\Debug\assign 5.pdb
