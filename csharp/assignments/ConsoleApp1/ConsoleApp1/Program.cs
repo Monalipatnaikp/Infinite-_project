@@ -1,84 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace MobilePhoneNotification
+class Program
 {
-    
-    class MobilePhone
+    static void Main()
     {
-        
-        public delegate void RingEventHandler();
-
-        public event RingEventHandler OnRing;
-
-        
-        public void ReceiveCall()
-        {
-            Console.WriteLine("\n Incoming Call");
-            OnRing?.Invoke(); 
-        }
+        var numbers = new List<int> { 10, 5, 15 };
+        var result = CalculateMinMaxAvg(numbers);
+        Console.WriteLine($"Min: {result.min}, Max: {result.max}, Avg: {result.avg}");
     }
 
-    
-    class RingtonePlayer
+    static (int min, int max, double avg) CalculateMinMaxAvg(IEnumerable<int> numbers)
     {
-        public void PlayRingtone()
-        {
-            Console.WriteLine("Playing ringtone");
-        }
-    }
+        int min = numbers.Min();
+        int max = numbers.Max();
+        double avg = numbers.Average();
 
-    
-    class ScreenDisplay
-    {
-        public void ShowCallerInfo()
-        {
-            Console.WriteLine(" Displaying caller information");
-        }
-    }
-
-    
-    class VibrationMotor
-    {
-        public void Vibrate()
-        {
-            Console.WriteLine("Phone is vibrating");
-        }
-    }
-
-    
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            
-            MobilePhone phone = new MobilePhone();
-            RingtonePlayer ringtone = new RingtonePlayer();
-            ScreenDisplay display = new ScreenDisplay();
-            VibrationMotor vibration = new VibrationMotor();
-            phone.OnRing += ringtone.PlayRingtone;
-            phone.OnRing += display.ShowCallerInfo;
-            phone.OnRing += vibration.Vibrate;
-
-            while (true)
-            {
-                
-                string input = Console.ReadLine()?.Trim().ToLower();
-
-                if (input == "call")
-                {
-                    phone.ReceiveCall();
-                }
-                else if (input == "exit")
-                {
-                    Console.WriteLine(" Exit");
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine(" Invalid input");
-                    Console.ReadLine();
-                }
-            }
-        }
+        return (min, max, avg);
     }
 }

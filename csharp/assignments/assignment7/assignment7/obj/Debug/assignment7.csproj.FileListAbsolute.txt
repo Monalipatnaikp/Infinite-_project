@@ -1,0 +1,7 @@
+C:\monali\infinite\csharp\assignments\assignment7\assignment7\bin\Debug\assignment7.exe.config
+C:\monali\infinite\csharp\assignments\assignment7\assignment7\bin\Debug\assignment7.exe
+C:\monali\infinite\csharp\assignments\assignment7\assignment7\bin\Debug\assignment7.pdb
+C:\monali\infinite\csharp\assignments\assignment7\assignment7\obj\Debug\assignment7.csproj.AssemblyReference.cache
+C:\monali\infinite\csharp\assignments\assignment7\assignment7\obj\Debug\assignment7.csproj.CoreCompileInputs.cache
+C:\monali\infinite\csharp\assignments\assignment7\assignment7\obj\Debug\assignment7.exe
+C:\monali\infinite\csharp\assignments\assignment7\assignment7\obj\Debug\assignment7.pdb
