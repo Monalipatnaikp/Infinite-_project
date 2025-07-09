@@ -1,0 +1,7 @@
+C:\monali\infinite\csharp\code challenge\code challenge 3\code challenge 3\bin\Debug\code challenge 3.exe.config
+C:\monali\infinite\csharp\code challenge\code challenge 3\code challenge 3\bin\Debug\code challenge 3.exe
+C:\monali\infinite\csharp\code challenge\code challenge 3\code challenge 3\bin\Debug\code challenge 3.pdb
+C:\monali\infinite\csharp\code challenge\code challenge 3\code challenge 3\obj\Debug\code challenge 3.csproj.AssemblyReference.cache
+C:\monali\infinite\csharp\code challenge\code challenge 3\code challenge 3\obj\Debug\code challenge 3.csproj.CoreCompileInputs.cache
+C:\monali\infinite\csharp\code challenge\code challenge 3\code challenge 3\obj\Debug\code challenge 3.exe
+C:\monali\infinite\csharp\code challenge\code challenge 3\code challenge 3\obj\Debug\code challenge 3.pdb
