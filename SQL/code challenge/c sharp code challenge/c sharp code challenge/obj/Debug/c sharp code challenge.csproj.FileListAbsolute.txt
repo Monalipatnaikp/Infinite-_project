@@ -1,0 +1,7 @@
+C:\monali\infinite\SQL\code challenge\c sharp code challenge\c sharp code challenge\bin\Debug\c sharp code challenge.exe.config
+C:\monali\infinite\SQL\code challenge\c sharp code challenge\c sharp code challenge\bin\Debug\c sharp code challenge.exe
+C:\monali\infinite\SQL\code challenge\c sharp code challenge\c sharp code challenge\bin\Debug\c sharp code challenge.pdb
+C:\monali\infinite\SQL\code challenge\c sharp code challenge\c sharp code challenge\obj\Debug\c sharp code challenge.csproj.AssemblyReference.cache
+C:\monali\infinite\SQL\code challenge\c sharp code challenge\c sharp code challenge\obj\Debug\c sharp code challenge.csproj.CoreCompileInputs.cache
+C:\monali\infinite\SQL\code challenge\c sharp code challenge\c sharp code challenge\obj\Debug\c sharp code challenge.exe
+C:\monali\infinite\SQL\code challenge\c sharp code challenge\c sharp code challenge\obj\Debug\c sharp code challenge.pdb

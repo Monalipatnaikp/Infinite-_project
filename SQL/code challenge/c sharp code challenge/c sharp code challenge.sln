@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.36128.20
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{098A2705-E2CB-4744-9832-5FEB70F8900C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "c sharp code challenge", "c sharp code challenge\c sharp code challenge.csproj", "{4435A2B7-FEF4-4DA9-959C-D11F65148627}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{098A2705-E2CB-4744-9832-5FEB70F8900C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{098A2705-E2CB-4744-9832-5FEB70F8900C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{098A2705-E2CB-4744-9832-5FEB70F8900C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{098A2705-E2CB-4744-9832-5FEB70F8900C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4435A2B7-FEF4-4DA9-959C-D11F65148627}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4435A2B7-FEF4-4DA9-959C-D11F65148627}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4435A2B7-FEF4-4DA9-959C-D11F65148627}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4435A2B7-FEF4-4DA9-959C-D11F65148627}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {A56D637A-ABE3-4CF4-99FF-064A25B0E65B}
+		SolutionGuid = {18EB0B74-A378-4A85-B72F-6AEF06E9A458}
 	EndGlobalSection
 EndGlobal
