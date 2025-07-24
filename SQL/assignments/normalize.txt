@@ -1,0 +1,28 @@
+
+ClientNo	cName
+
+CR76	        John Kay
+CR56	       Aline Stewart
+
+
+
+propNO	     pAddress	           rent	      ownerNo
+PG4	6Lawrence St, Glasgow	   350	       CO40
+PG16	5Novar Dr, Glasgow	   450	       CO93
+PG36	2Manor Rd, Glasgow	   450	       CO93
+
+
+
+ClientNo	propertyNo	rentStart	rentFinish
+CR76	           PG4	         1-Jul-00	 31-Aug-01
+CR76	           PG16	         1-Sep-02	 1-Sep-02
+CR76	           PG4	         1-Sep-99	 10-Jun-00
+CR56	           PG36	        10-Oct-00	 1-Dec-01
+CR56	           PG16	         1-Nov-02	 1-Aug-03
+
+
+
+ownerNO                  OName
+CO40	              Tina Murphy
+CO93	               Tony Shaw
+
