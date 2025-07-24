@@ -50,9 +50,9 @@ select *from holidayss
 
 
  
-create trigger trg_on_holiday
+create trigger trg_holiday
 on empp
-after insert, update, delete
+instead of insert, update, delete
 as
 begin
     declare @today date = cast(getdate() as date);
