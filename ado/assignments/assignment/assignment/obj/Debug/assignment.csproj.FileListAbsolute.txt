@@ -1,0 +1,14 @@
+C:\monali\infinite\ado\assignment\assignment\bin\Debug\assignment.exe.config
+C:\monali\infinite\ado\assignment\assignment\bin\Debug\assignment.exe
+C:\monali\infinite\ado\assignment\assignment\bin\Debug\assignment.pdb
+C:\monali\infinite\ado\assignment\assignment\obj\Debug\assignment.csproj.AssemblyReference.cache
+C:\monali\infinite\ado\assignment\assignment\obj\Debug\assignment.csproj.CoreCompileInputs.cache
+C:\monali\infinite\ado\assignment\assignment\obj\Debug\assignment.exe
+C:\monali\infinite\ado\assignment\assignment\obj\Debug\assignment.pdb
+C:\monali\infinite\ado\assignments\assignment\assignment\bin\Debug\assignment.exe.config
+C:\monali\infinite\ado\assignments\assignment\assignment\bin\Debug\assignment.exe
+C:\monali\infinite\ado\assignments\assignment\assignment\bin\Debug\assignment.pdb
+C:\monali\infinite\ado\assignments\assignment\assignment\obj\Debug\assignment.csproj.AssemblyReference.cache
+C:\monali\infinite\ado\assignments\assignment\assignment\obj\Debug\assignment.csproj.CoreCompileInputs.cache
+C:\monali\infinite\ado\assignments\assignment\assignment\obj\Debug\assignment.exe
+C:\monali\infinite\ado\assignments\assignment\assignment\obj\Debug\assignment.pdb
