@@ -1,0 +1,7 @@
+C:\monali\infinite\ado\code challenge\console app2\console app2\bin\Debug\console app2.exe.config
+C:\monali\infinite\ado\code challenge\console app2\console app2\bin\Debug\console app2.exe
+C:\monali\infinite\ado\code challenge\console app2\console app2\bin\Debug\console app2.pdb
+C:\monali\infinite\ado\code challenge\console app2\console app2\obj\Debug\console app2.csproj.AssemblyReference.cache
+C:\monali\infinite\ado\code challenge\console app2\console app2\obj\Debug\console app2.csproj.CoreCompileInputs.cache
+C:\monali\infinite\ado\code challenge\console app2\console app2\obj\Debug\console app2.exe
+C:\monali\infinite\ado\code challenge\console app2\console app2\obj\Debug\console app2.pdb
