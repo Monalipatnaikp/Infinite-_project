@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML & CSS Showcase</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        section {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 900px;
+        }
+
+        /* Image Overlay */
+        .image-container {
+            position: relative;
+            width: 300px;
+            margin: auto;
+        }
+
+            .image-container img {
+                width: 100%;
+                display: block;
+                border-radius: 10px;
+            }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .image-container:hover .overlay {
+            opacity: 1;
+        }
+
+        /* Button */
+        .fancy-button {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+            .fancy-button:hover {
+                transform: scale(1.1);
+            }
+
+        /* Definition List */
+        dl {
+            margin: 20px;
+        }
+
+        dt {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        dd {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        /* Animation */
+        .box {
+            width: 100px;
+            height: 100px;
+            background-color: coral;
+            animation: bounce 1s ease infinite;
+            animation-delay: 2s;
+            margin: auto;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-50px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .restart-button {
+            display: block;
+            margin: 20px auto;
+        }
+
+        /* Tribute */
+        .tribute-container img {
+            width: 200px;
+            border-radius: 50%;
+        }
+
+        .tribute-container ul {
+            text-align: left;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .tribute-container li {
+            margin-bottom: 10px;
+        }
+
+        .tribute-container p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .center {
+            text-align: center;
+        }
+    </style>
+    <script>
+        function restartAnimation() {
+            const box = document.querySelector('.box');
+            box.style.animation = 'none';
+            box.offsetHeight; // trigger reflow
+            box.style.animation = 'bounce 1s ease infinite';
+        }
+    </script>
+</head>
+<body>
+
+    <h1>HTML </h1>
+
+    <!----Image Overlay -->
+    <section>
+        <h2>Image </h2>
+        <div class="container">
+            <img src="C:\Users\monalip\Downloads\Flowers.jpg" alt="flowers"style="width:100%">
+            <div class="middle">
+                <div class="text">flowers</div>
+            </div>
+        </div>
+
+    </section>
+
+<!--  CSS3 Button -->
+<section class="center">
+    <h2> Styled Button</h2>
+    <button class="fancy-button">Click Me</button>
+</section>
+
+<!-- Definition  -->
+<section>
+    <h2>Descriptive</h2>
+    <dl>
+        <dt>HTML</dt>
+        <dd>HyperText Markup Language, used to structure web content.</dd>
+
+        <dt>CSS</dt>
+        <dd>Cascading Style Sheets, used to style HTML elements.</dd>
+
+        <dt>JavaScript</dt>
+        <dd>A scripting language used to create dynamic web pages.</dd>
+    </dl>
+</section>
+
+<!-- Animation  -->
+<section>
+    <h2>Animation </h2>
+    <div class="box"></div>
+    <button class="restart-button fancy-button" onclick="restartAnimation()">Restart Animation</button>
+</section>
+
+<!-
+</section>
+
+</body>
+</html>
