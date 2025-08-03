@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task </title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #e1bee7);
+            font-family: 'Times New Roman', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 60px 20px;
+        }
+
+        .app {
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid #ccc;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            width: 360px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            color: #4a148c;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #aaa;
+            border-radius: 10px;
+            font-size: 15px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #f3f3f3;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #7b1fa2, #4a148c);
+            border: none;
+            color: #fff;
+            font-size: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+            button:hover {
+                transform: scale(1.03);
+            }
+
+        ul {
+            margin-top: 20px;
+            padding-left: 0;
+            list-style-type: none;
+        }
+
+        li {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .task-text {
+            flex: 1;
+            padding-left: 10px;
+            font-size: 14px;
+        }
+
+        .task-complete {
+            color: #7b1fa2;
+            transform: scale(1.2);
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #d50000;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .task-completed .task-text {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+        <h2>Tasks</h2>
+        <input type="text" id="taskInput" placeholder="add task">
+        <select id="categorySelector">
+            <option value="">General</option>
+            <option value="">Study</option>
+            <option value="">Work</option>
+            <option value="">Shopping</option>
+            <option value="">Fitness</option>
+            <option value="">Creative</option>
+        </select>
+        <button id="addBtn">Add Task</button>
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+    const taskInput = document.getElementById('taskInput');
+    const categorySelector = document.getElementById('categorySelector');
+    const addBtn = document.getElementById('addBtn');
+    const taskList = document.getElementById('taskList');
+
+    addBtn.addEventListener('click', () => {
+      const task = taskInput.value.trim();
+      const icon = categorySelector.value;
+
+      if (task !== '') {
+        const li = document.createElement('li');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'task-complete';
+
+        const span = document.createElement('span');
+        span.className = 'task-text';
+        span.textContent = `${icon} ${task}`;
+
+        const del = document.createElement('button');
+        del.textContent = '-';
+        del.className = 'delete-btn';
+
+        checkbox.addEventListener('change', () => {
+          li.classList.toggle('task-completed', checkbox.checked);
+        });
+
+        del.addEventListener('click', () => {
+          li.remove();
+        });
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        li.appendChild(del);
+
+        taskList.appendChild(li);
+        taskInput.value = '';
+        categorySelector.selectedIndex = 0;
+      }
+    });
+    </script>
+
+</body>
+</html>
