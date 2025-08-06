@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Div Child H1 Styling</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+        }
+
+      
+        div > h1 {
+            background: linear-gradient(to right, pink);
+            padding: 16px 24px;
+            border-radius: 10px;
+            color: #4a4a4a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease;
+        }
+
+            div > h1:hover {
+                transform: scale(1.05);
+            }
+
+        .container {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ENJOY YOURSELVES.</h1>
+    </div>
+
+    <div class="container">
+        <h1>STAY HAPPY</h1>
+    </div>
+
+    <section>
+        <h1>MONALI PATNAIK</h1>
+    </section>
+
+</body>
+</html>

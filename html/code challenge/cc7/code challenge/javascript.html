@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Odd or Even Checker</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .even {
+            color: blue;
+        }
+
+        .odd {
+            color: black;
+        }
+
+        .number-line {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h2> Odd or Even:</h2>
+    <div id="output"></div>
+
+    <script>
+       
+        const outputContainer = document.getElementById("output");
+        for (let number = 0; number <= 15; number++) {
+            
+            const isEven = number % 2 === 0;
+            const type = isEven ? "even" : "odd";
+            const message = `${number} is ${type}`;
+            const line = document.createElement("p");
+            line.textContent = message;
+            line.className = `number-line ${type}`;
+            outputContainer.appendChild(line);
+        }
+    </script>
+</body>
+</html>

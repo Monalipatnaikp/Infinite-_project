@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Click to Enlarge LI</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Times New Roman', sans-serif;
+            background-color: #f4f4f4;
+            padding: 40px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+    
+        .enlarged {
+            font-size: 24px;
+            background-color: hotpink;
+            font-weight: bold;
+            transform: scale(1.05);
+            border-left: 6px solid #0f5132;
+        }
+    </style>
+</head>
+<body>
+
+    <ul>
+        <li>CSHARP</li>
+        <li>SQL</li>
+        <li>ADO</li>
+    </ul>
+
+    <script>
+        $(document).ready(function () {
+            $("ul li").on("click", function () {
+             
+                $("ul li").removeClass("enlarged");
+
+           
+                $(this).addClass("enlarged");
+
+              
+                console.log("You clicked:", $(this).text());
+            });
+        });
+    </script>
+
+</body>
+</html>

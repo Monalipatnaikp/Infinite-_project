@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Interactive Input Response</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f8ff;
+            padding: 40px;
+            color: #333;
+        }
+
+        input {
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            width: 300px;
+            transition: border-color 0.3s ease;
+        }
+
+            input:focus {
+                border-color: ghostwhite;
+                outline: none;
+            }
+
+        #responseArea {
+            margin-top: 30px;
+        }
+
+        .message {
+            background-color: lightpink;
+            border-left: 5px solid #0078d7;
+            padding: 10px 16px;
+            margin-top: 10px;
+            border-radius: 6px;
+            font-size: 16px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>share me anything</h2>
+    <input type="text" id="userInput" placeholder="Type something">
+    <div id="responseArea"></div>
+
+    <script>
+        $(document).ready(function () {
+            $("#userInput").on("change", function () {
+                const userText = $(this).val().trim();
+
+                if (userText !== "") {
+                    const message = $("<p class='message'></p>").text(`entered: "${userText}" — I am listening!`);
+                    $("#responseArea").append(message);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

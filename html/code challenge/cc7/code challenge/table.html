@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Toggle Odd Rows</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            padding: 40px;
+        }
+
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            width: 60%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #0078D7;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #toggleBtn {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #0078D7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+            #toggleBtn:hover {
+                background-color: pink;
+            }
+    </style>
+</head>
+<body>
+
+    <h2>ODD ROWS TABLE</h2>
+    <button id="toggleBtn">Hide Odd Rows</button>
+
+    <table id="dataTable">
+        <tr><th>sno</th><th>Name</th></tr>
+        <tr><td>1</td><td>monali</td></tr>
+        <tr><td>2</td><td>sravya</td></tr>
+        <tr><td>3</td><td>minnie</td></tr>
+        <tr><td>4</td><td>rakshitha</td></tr>
+        <tr><td>5</td><td>ramya</td></tr>
+    </table>
+
+    <script>
+        const toggleButton = document.getElementById("toggleBtn");
+        const table = document.getElementById("dataTable");
+        let oddHidden = false;
+
+        toggleButton.addEventListener("click", () => {
+            const rows = table.querySelectorAll("tr:nth-child(odd)");
+
+           
+            for (let i = 1; i < rows.length; i++) {
+                rows[i].classList.toggle("hidden");
+            }
+
+    
+            oddHidden = oddHidden;
+            toggleButton.textContent = oddHidden  ? "Show Odd Rows" : "Hide Odd Rows";
+        });
+    </script>
+
+</body>
+</html>

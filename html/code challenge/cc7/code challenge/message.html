@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title> Button Click</title>
+    <style>
+        body {
+            font-family: 'times new roman', sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        #clickMeBtn {
+            padding: 12px 24px;
+            font-size: 20px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            #clickMeBtn:hover {
+                background-color: lightblue;
+            }
+    </style>
+</head>
+<body>
+
+    <script>
+       
+        const clickButton = document.createElement("button");
+
+      
+        clickButton.textContent = "HIT ME";
+        clickButton.id = "click";
+
+       
+        document.body.appendChild(clickButton);
+
+       
+        clickButton.addEventListener("click", () => {
+            console.log(" HAVE A GOOD DAY.");
+        });
+    </script>
+
+</body>
+</html>

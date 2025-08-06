@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Index Tag </title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Times New Roman', sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 18px;
+        }
+
+        .index-tag {
+            display: inline-block;
+            background-color: deeppink;
+            color: #fff;
+            padding: 4px 8px;
+            margin-right: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <ul>
+        <li>reading</li>
+        <li>dancing</li>
+        <li>listening</li>
+        <li>coding</li>
+    </ul>
+
+    <script>
+        $(document).ready(function () {
+            $("ul li").each(function (index) {
+              
+                const tag = $("<span class='index-tag'></span>").text(index);
+                $(this).prepend(tag);
+            });
+        });
+    </script>
+
+</body>
+</html>
