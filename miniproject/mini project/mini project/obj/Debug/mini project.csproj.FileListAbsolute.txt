@@ -1,0 +1,7 @@
+C:\Users\monalip\Desktop\mini project\mini project\bin\Debug\mini project.exe.config
+C:\Users\monalip\Desktop\mini project\mini project\bin\Debug\mini project.exe
+C:\Users\monalip\Desktop\mini project\mini project\bin\Debug\mini project.pdb
+C:\Users\monalip\Desktop\mini project\mini project\obj\Debug\mini project.csproj.AssemblyReference.cache
+C:\Users\monalip\Desktop\mini project\mini project\obj\Debug\mini project.csproj.CoreCompileInputs.cache
+C:\Users\monalip\Desktop\mini project\mini project\obj\Debug\mini project.exe
+C:\Users\monalip\Desktop\mini project\mini project\obj\Debug\mini project.pdb
