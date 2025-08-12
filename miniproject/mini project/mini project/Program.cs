@@ -5,18 +5,18 @@ using System.Data.SqlClient;
 
 namespace RailwayReservationSystem
 {
-
     public class DbHelper
     {
-        private readonly string connectionString = "Server=ICS-LT-7Z33D64\\SQLEXPRESS01;Database=railwaydb;user id=sa;password=Monalipatnaik@123;";
+        public string ConnectionString { get; } = "Server=ICS-LT-7Z33D64\\SQLEXPRESS01;Database=railwaydbb;user id=sa;password=Monalipatnaik@123;";
 
         public void ExecuteNonQuery(string query, Dictionary<string, object> parameters)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
-                SqlCommand cmd = new SqlCommand(query, conn);
-                foreach (var param in parameters)
-                    cmd.Parameters.AddWithValue(param.Key, param.Value);
+                if (parameters != null)
+                    foreach (var p in parameters)
+                        cmd.Parameters.AddWithValue(p.Key, p.Value ?? DBNull.Value);
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
@@ -24,129 +24,19 @@ namespace RailwayReservationSystem
 
         public DataTable ExecuteQuery(string query, Dictionary<string, object> parameters = null)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
             {
-                SqlCommand cmd = new SqlCommand(query, conn);
                 if (parameters != null)
-                    foreach (var param in parameters)
-                        cmd.Parameters.AddWithValue(param.Key, param.Value);
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
-                return dt;
+                    foreach (var p in parameters)
+                        cmd.Parameters.AddWithValue(p.Key, p.Value ?? DBNull.Value);
+                using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                {
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+                    return dt;
+                }
             }
-        }
-    }
-
-
-    public class CustomerService
-    {
-        private readonly DbHelper db = new DbHelper();
-        public void RegisterCustomer(int custId, string name, string phone, string mail)
-        {
-            string query = @"INSERT INTO customerss (custid, custname, phone, mailid) VALUES (@id, @name, @phone, @mail)";
-            db.ExecuteNonQuery(query, new Dictionary<string, object>
-            {
-                {"@id", custId},
-                {"@name", name},
-                {"@phone", phone},
-                {"@mail", mail}
-            });
-            Console.WriteLine("Customer registered successfully.");
-        }
-    }
-
-
-    public class ReservationService
-    {
-        private readonly DbHelper db = new DbHelper();
-        public void BookTicket(int bookingId, int custId, string custName, DateTime travelDate, string classType, int seats)
-        {
-            string trainQuery = @"SELECT costperseat FROM trains WHERE class = @class";
-            var trainData = db.ExecuteQuery(trainQuery, new Dictionary<string, object> { { "@class", classType } });
-
-            if (trainData.Rows.Count == 0)
-            {
-                Console.WriteLine("Train class not found.");
-                return;
-            }
-
-            decimal costPerSeat = (decimal)trainData.Rows[0]["costperseat"];
-            decimal totalCost = costPerSeat * seats;
-            DateTime bookingDate = DateTime.Now;
-
-            string insertQuery = @"INSERT INTO reservation (bookingid, custno, custname, traveldate, class, seatsbooked, totalcost, bookingdate)
-                                   VALUES (@bid, @cid, @name, @tdate, @class, @seats, @cost, @bdate)";
-            db.ExecuteNonQuery(insertQuery, new Dictionary<string, object>
-            {
-                {"@bid", bookingId},
-                {"@cid", custId},
-                {"@name", custName},
-                {"@tdate", travelDate},
-                {"@class", classType},
-                {"@seats", seats},
-                {"@cost", totalCost},
-                {"@bdate", bookingDate}
-            });
-
-            Console.WriteLine("Reservation successful.");
-        }
-
-        public void PrintTicket(int bookingId)
-        {
-            string query = @"SELECT * FROM reservation WHERE bookingid = @bid";
-            var data = db.ExecuteQuery(query, new Dictionary<string, object> { { "@bid", bookingId } });
-
-            if (data.Rows.Count == 0)
-            {
-                Console.WriteLine("Ticket not found.");
-                return;
-            }
-
-            var row = data.Rows[0];
-            Console.WriteLine("\nTicket Details:");
-            Console.WriteLine($"Booking ID: {row["bookingid"]}");
-            Console.WriteLine($"Customer Name: {row["custname"]}");
-            Console.WriteLine($"Travel Date: {Convert.ToDateTime(row["traveldate"]).ToShortDateString()}");
-            Console.WriteLine($"Class: {row["class"]}");
-            Console.WriteLine($"Seats Booked: {row["seatsbooked"]}");
-            Console.WriteLine($"Total Cost: ₹{row["totalcost"]}");
-            Console.WriteLine($"Booking Date: {Convert.ToDateTime(row["bookingdate"]).ToShortDateString()}");
-        }
-    }
-
-
-    public class CancellationService
-    {
-        private readonly DbHelper db = new DbHelper();
-        public void CancelTicket(int bookingId)
-        {
-            string query = @"SELECT totalcost FROM reservation WHERE bookingid = @bid";
-            var data = db.ExecuteQuery(query, new Dictionary<string, object> { { "@bid", bookingId } });
-
-            if (data.Rows.Count == 0)
-            {
-                Console.WriteLine("Booking not found.");
-                return;
-            }
-
-            decimal totalCost = (decimal)data.Rows[0]["totalcost"];
-            decimal refund = totalCost * 0.5m;
-            DateTime cancelDate = DateTime.Now;
-
-            string insertCancel = @"INSERT INTO cancellation (bid, ticketcancelled, refundamount, cancellationdate)
-                                    VALUES (@bid, 1, @refund, @date)";
-            db.ExecuteNonQuery(insertCancel, new Dictionary<string, object>
-            {
-                {"@bid", bookingId},
-                {"@refund", refund},
-                {"@date", cancelDate}
-            });
-
-            string deleteReservation = "DELETE FROM reservation WHERE bookingid = @bid";
-            db.ExecuteNonQuery(deleteReservation, new Dictionary<string, object> { { "@bid", bookingId } });
-
-            Console.WriteLine($"Ticket cancelled. Refund: ₹{refund}");
         }
     }
 
@@ -154,110 +44,281 @@ namespace RailwayReservationSystem
     {
         private readonly DbHelper db = new DbHelper();
 
-        public void AddTrain(int trainNo, string trainName, string classType, decimal costPerSeat)
+        public void AddTrain(string name, string source, string dest, DateTime dep, DateTime arr, int totalSeats)
         {
-            string query = @"INSERT INTO trains (trainno, trainname, class, costperseat)
-                             VALUES (@no, @name, @class, @cost)";
-            db.ExecuteNonQuery(query, new Dictionary<string, object>
-            {
-                {"@no", trainNo},
-                {"@name", trainName},
-                {"@class", classType},
-                {"@cost", costPerSeat}
+            string query = @"INSERT INTO Train (TrainName, Source, Destination, DepartureTime, ArrivalTime, TotalSeats, AvailableSeats)
+                             VALUES (@name, @src, @dest, @dep, @arr, @total, @avail)";
+            db.ExecuteNonQuery(query, new Dictionary<string, object> {
+                {"@name", name},
+                {"@src", source},
+                {"@dest", dest},
+                {"@dep", dep},
+                {"@arr", arr},
+                {"@total", totalSeats},
+                {"@avail", totalSeats}
             });
-            Console.WriteLine("Train added successfully.");
+            Console.WriteLine("Train added.");
         }
 
-        public void DeleteTrain(int trainNo)
+        public void DeleteTrain(int trainId)
         {
-            string query = "DELETE FROM trains WHERE trainno = @no";
-            db.ExecuteNonQuery(query, new Dictionary<string, object> { { "@no", trainNo } });
-            Console.WriteLine("Train deleted successfully.");
+            var reservations = db.ExecuteQuery("SELECT 1 FROM Reservation WHERE TrainID = @tid", new Dictionary<string, object> { { "@tid", trainId } });
+            if (reservations.Rows.Count > 0)
+            {
+                Console.WriteLine("Cannot delete: there are existing reservations for this train.");
+                return;
+            }
+            db.ExecuteNonQuery("DELETE FROM TrainClasses WHERE TrainID = @tid", new Dictionary<string, object> { { "@tid", trainId } });
+            db.ExecuteNonQuery("DELETE FROM Train WHERE TrainID = @tid", new Dictionary<string, object> { { "@tid", trainId } });
+            Console.WriteLine("Train deleted.");
         }
 
         public void ViewAllTrains()
         {
-            DataTable trains = db.ExecuteQuery("SELECT * FROM trains");
-            Console.WriteLine("\nAll Trains:");
-            foreach (DataRow row in trains.Rows)
+            var dt = db.ExecuteQuery("SELECT TrainID, TrainName, Source, Destination, DepartureTime, ArrivalTime, TotalSeats, AvailableSeats FROM Train");
+            Console.WriteLine("\nTrainID | Name                 | Source -> Destination | Dep               | Arr               | AvailSeats");
+            foreach (DataRow r in dt.Rows)
             {
-                Console.WriteLine($"No: {row["trainno"]}, Name: {row["trainname"]}, Class: {row["class"]}, Cost: ₹{row["costperseat"]}");
+                Console.WriteLine($"{r["TrainID"],-7} | {r["TrainName"],-20} | {r["Source"]} -> {r["Destination"],-15} | {Convert.ToDateTime(r["DepartureTime"]):yyyy-MM-dd HH:mm} | {Convert.ToDateTime(r["ArrivalTime"]):yyyy-MM-dd HH:mm} | {r["AvailableSeats"]}");
             }
         }
     }
-
 
     public class TrainClassService
     {
         private readonly DbHelper db = new DbHelper();
 
-        public void AddTrainClass(string className, decimal costPerSeat)
+        public void AddTrainClass(int trainId, string className, int seatCount, decimal fare)
         {
-            string query = @"INSERT INTO trainclasses (classname, costperseat)
-                             VALUES (@class, @cost)";
-            db.ExecuteNonQuery(query, new Dictionary<string, object>
+            var t = db.ExecuteQuery("SELECT 1 FROM Train WHERE TrainID = @tid", new Dictionary<string, object> { { "@tid", trainId } });
+            if (t.Rows.Count == 0) { Console.WriteLine("Train not found."); return; }
+
+            db.ExecuteNonQuery(@"INSERT INTO TrainClasses (TrainID, ClassName, SeatCount, Fare)
+                                 VALUES (@tid, @cls, @seat, @fare)", new Dictionary<string, object>
             {
-                {"@class", className},
-                {"@cost", costPerSeat}
+                {"@tid", trainId},
+                {"@cls", className},
+                {"@seat", seatCount},
+                {"@fare", fare}
             });
-            Console.WriteLine("Train class added successfully.");
+            Console.WriteLine("Class added.");
         }
 
         public void ViewTrainClasses()
         {
-            DataTable classes = db.ExecuteQuery("SELECT * FROM trainclasses");
-            Console.WriteLine("\nTrain Classes:");
-            foreach (DataRow row in classes.Rows)
-            {
-                Console.WriteLine($"Class: {row["classname"]}, Cost: ₹{row["costperseat"]}");
-            }
+            var dt = db.ExecuteQuery(@"SELECT tc.TrainID, t.TrainName, tc.ClassName, tc.SeatCount, tc.Fare
+                                       FROM TrainClasses tc
+                                       JOIN Train t ON tc.TrainID = t.TrainID");
+            Console.WriteLine("\nTrainID | TrainName            | Class      | Seats | Fare");
+            foreach (DataRow r in dt.Rows)
+                Console.WriteLine($"{r["TrainID"],-7} | {r["TrainName"],-20} | {r["ClassName"],-10} | {r["SeatCount"],-5} | {r["Fare"]}");
         }
     }
 
-
-    public class BookingReportService
+    public class ReservationService
     {
         private readonly DbHelper db = new DbHelper();
 
-        public void ViewAllBookings()
+        public void BookTicket(int bookingId, int custId, string custName, int trainId, DateTime travelDate, string classType, int seats)
         {
-            DataTable bookingData = db.ExecuteQuery("SELECT * FROM reservation");
-            Console.WriteLine("\nAll Bookings:");
-            foreach (DataRow row in bookingData.Rows)
+            using (SqlConnection conn = new SqlConnection(db.ConnectionString))
             {
-                Console.WriteLine($"Booking ID: {row["bookingid"]}, Customer: {row["custname"]}, Date: {row["traveldate"]}, Class: {row["class"]}, Seats: {row["seatsbooked"]}, Cost: ₹{row["totalcost"]}");
+                conn.Open();
+                using (SqlTransaction tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        using (SqlCommand cmd = new SqlCommand(
+                            "SELECT SeatCount, Fare FROM TrainClasses WHERE TrainID = @tid AND ClassName = @class", conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("@tid", trainId);
+                            cmd.Parameters.AddWithValue("@class", classType);
+                            using (SqlDataReader rdr = cmd.ExecuteReader())
+                            {
+                                if (!rdr.Read())
+                                {
+                                    Console.WriteLine("Class not found for this train.");
+                                    tx.Rollback();
+                                    return;
+                                }
+                                int availClassSeats = Convert.ToInt32(rdr["SeatCount"]);
+                                decimal fare = Convert.ToDecimal(rdr["Fare"]);
+                                rdr.Close();
+
+                                if (availClassSeats < seats)
+                                {
+                                    Console.WriteLine($"Not enough seats in class {classType}. Available: {availClassSeats}");
+                                    tx.Rollback();
+                                    return;
+                                }
+
+                                using (SqlCommand cmd2 = new SqlCommand("SELECT AvailableSeats FROM Train WHERE TrainID = @tid", conn, tx))
+                                {
+                                    cmd2.Parameters.AddWithValue("@tid", trainId);
+                                    object o = cmd2.ExecuteScalar();
+                                    if (o == null)
+                                    {
+                                        Console.WriteLine("Train not found.");
+                                        tx.Rollback();
+                                        return;
+                                    }
+                                    int trainAvail = Convert.ToInt32(o);
+                                    if (trainAvail < seats)
+                                    {
+                                        Console.WriteLine($"Not enough total seats on train. Available: {trainAvail}");
+                                        tx.Rollback();
+                                        return;
+                                    }
+                                }
+
+                                decimal totalCost = fare * seats;
+                                DateTime bookingDate = DateTime.Now;
+                                using (SqlCommand ins = new SqlCommand(
+                                    @"INSERT INTO Reservation (BookingID, CustNo, TrainID, CustName, TravelDate, Class, SeatsBooked, TotalCost, BookingDate)
+                                      VALUES (@bid, @cid, @tid, @name, @tdate, @class, @seats, @cost, @bdate)", conn, tx))
+                                {
+                                    ins.Parameters.AddWithValue("@bid", bookingId);
+                                    ins.Parameters.AddWithValue("@cid", custId);
+                                    ins.Parameters.AddWithValue("@tid", trainId);
+                                    ins.Parameters.AddWithValue("@name", custName);
+                                    ins.Parameters.AddWithValue("@tdate", travelDate);
+                                    ins.Parameters.AddWithValue("@class", classType);
+                                    ins.Parameters.AddWithValue("@seats", seats);
+                                    ins.Parameters.AddWithValue("@cost", totalCost);
+                                    ins.Parameters.AddWithValue("@bdate", bookingDate);
+                                    ins.ExecuteNonQuery();
+                                }
+
+                                using (SqlCommand updClass = new SqlCommand(
+                                    "UPDATE TrainClasses SET SeatCount = SeatCount - @seats WHERE TrainID = @tid AND ClassName = @class", conn, tx))
+                                {
+                                    updClass.Parameters.AddWithValue("@seats", seats);
+                                    updClass.Parameters.AddWithValue("@tid", trainId);
+                                    updClass.Parameters.AddWithValue("@class", classType);
+                                    updClass.ExecuteNonQuery();
+                                }
+
+                                using (SqlCommand updTrain = new SqlCommand(
+                                    "UPDATE Train SET AvailableSeats = AvailableSeats - @seats WHERE TrainID = @tid", conn, tx))
+                                {
+                                    updTrain.Parameters.AddWithValue("@seats", seats);
+                                    updTrain.Parameters.AddWithValue("@tid", trainId);
+                                    updTrain.ExecuteNonQuery();
+                                }
+
+                                tx.Commit();
+                                Console.WriteLine("Booking successful. BookingID: {bookingId}, Total Fare: ₹{totalCost}");
+                                return;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        try { tx.Rollback(); } catch { }
+                        Console.WriteLine("Error while booking:");
+                        return;
+                    }
+                }
             }
         }
 
-        public void ViewAllCancellations()
+        public void PrintTicket(int bookingId)
         {
-            DataTable cancelData = db.ExecuteQuery("SELECT * FROM cancellation");
-            Console.WriteLine("\nAll Cancellations:");
-            foreach (DataRow row in cancelData.Rows)
+            var dt = db.ExecuteQuery("SELECT * FROM Reservation WHERE BookingID = @bid", new Dictionary<string, object> { { "@bid", bookingId } });
+            if (dt.Rows.Count == 0) { Console.WriteLine("Ticket not found."); return; }
+            var r = dt.Rows[0];
+            Console.WriteLine("\nTicket:");
+            Console.WriteLine($"BookingID: {r["BookingID"]}");
+            Console.WriteLine($"Customer: {r["CustName"]} ({r["CustNo"]})");
+            Console.WriteLine($"TrainID: {r["TrainID"]}");
+            Console.WriteLine($"TravelDate: {Convert.ToDateTime(r["TravelDate"]):yyyy-MM-dd}");
+            Console.WriteLine($"Class: {r["Class"]}");
+            Console.WriteLine($"Seats: {r["SeatsBooked"]}");
+            Console.WriteLine($"TotalCost: ₹{r["TotalCost"]}");
+            Console.WriteLine($"BookingDate: {Convert.ToDateTime(r["BookingDate"]):yyyy-MM-dd}");
+        }
+    }
+
+    public class CancellationService
+    {
+        private readonly DbHelper db = new DbHelper();
+        public void CancelTicket(int bookingId)
+        {
+            var dt = db.ExecuteQuery("SELECT TotalCost, SeatsBooked, TrainID, Class FROM Reservation WHERE BookingID = @bid", new Dictionary<string, object> { { "@bid", bookingId } });
+            if (dt.Rows.Count == 0) { Console.WriteLine("Booking not found."); return; }
+            var row = dt.Rows[0];
+            decimal totalCost = Convert.ToDecimal(row["TotalCost"]);
+            int seats = Convert.ToInt32(row["SeatsBooked"]);
+            int trainId = Convert.ToInt32(row["TrainID"]);
+            string cls = Convert.ToString(row["Class"]);
+            decimal refund = totalCost * 0.5m;
+            DateTime cancelDate = DateTime.Now;
+
+            using (SqlConnection conn = new SqlConnection(db.ConnectionString))
             {
-                Console.WriteLine($"Booking ID: {row["bid"]}, Refund: ₹{row["refundamount"]}, Date: {row["cancellationdate"]}");
+                conn.Open();
+                using (SqlTransaction tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        using (SqlCommand ins = new SqlCommand(
+                            "INSERT INTO Cancellation (BID, TicketCancelled, RefundAmount, CancellationDate) VALUES (@bid, 1, @refund, @date)", conn, tx))
+                        {
+                            ins.Parameters.AddWithValue("@bid", bookingId);
+                            ins.Parameters.AddWithValue("@refund", refund);
+                            ins.Parameters.AddWithValue("@date", cancelDate);
+                            ins.ExecuteNonQuery();
+                        }
+                        using (SqlCommand updClass = new SqlCommand(
+                            "UPDATE TrainClasses SET SeatCount = SeatCount + @seats WHERE TrainID = @tid AND ClassName = @class", conn, tx))
+                        {
+                            updClass.Parameters.AddWithValue("@seats", seats);
+                            updClass.Parameters.AddWithValue("@tid", trainId);
+                            updClass.Parameters.AddWithValue("@class", cls);
+                            updClass.ExecuteNonQuery();
+                        }
+                        using (SqlCommand updTrain = new SqlCommand(
+                            "UPDATE Train SET AvailableSeats = AvailableSeats + @seats WHERE TrainID = @tid", conn, tx))
+                        {
+                            updTrain.Parameters.AddWithValue("@seats", seats);
+                            updTrain.Parameters.AddWithValue("@tid", trainId);
+                            updTrain.ExecuteNonQuery();
+                        }
+                        using (SqlCommand del = new SqlCommand("DELETE FROM Reservation WHERE BookingID = @bid", conn, tx))
+                        {
+                            del.Parameters.AddWithValue("@bid", bookingId);
+                            del.ExecuteNonQuery();
+                        }
+                        tx.Commit();
+                        Console.WriteLine($"Cancelled. Refund: ₹{refund}");
+                    }
+                    catch (Exception ex)
+                    {
+                        try { tx.Rollback(); } catch { }
+                        Console.WriteLine("Cancellation failed: " + ex.Message);
+                    }
+                }
             }
         }
     }
 
     class Program
     {
-        static void Main(string[] args)
+        private static readonly string connectionString = "Server=ICS-LT-7Z33D64\\SQLEXPRESS01;Database=railwaydbb;user id=sa;password=Monalipatnaik@123;";
+
+        static void Main()
         {
-            var custService = new CustomerService();
-            var resService = new ReservationService();
-            var cancelService = new CancellationService();
-            var trainService = new TrainService();
-            var trainClassService = new TrainClassService();
-            var bookingReport = new BookingReportService();
+            var db = new DbHelper();
+            var trainSvc = new TrainService();
+            var classSvc = new TrainClassService();
+            var resSvc = new ReservationService();
+            var cancelSvc = new CancellationService();
 
-            Console.Write(" (admin/user): ");
-            string role = Console.ReadLine().ToLower();
-
+            Console.Write("admin/user: ");
+            string role = Console.ReadLine()?.Trim().ToLower() ?? "user";
             Console.Write("Enter password: ");
-            string password = Console.ReadLine();
-
-            if ((role == "admin" && password != "admin123") || (role == "user" && password != "user123"))
+            string pwd = Console.ReadLine();
+            if ((role == "admin" && pwd != "admin123") || (role == "user" && pwd != "user123"))
             {
                 Console.WriteLine("Access Denied");
                 return;
@@ -274,138 +335,136 @@ namespace RailwayReservationSystem
                     Console.WriteLine("4. View All Trains");
                     Console.WriteLine("5. Add Train Class");
                     Console.WriteLine("6. View Train Classes");
-                    Console.WriteLine("7. View All Bookings");
+                    Console.WriteLine("7. View All Reservations");
                     Console.WriteLine("8. View All Cancellations");
-                    Console.WriteLine("9. View Ticket by ID");
-                    Console.WriteLine("10. Exit");
+                    Console.WriteLine("9. Exit");
+                    Console.Write("Choose: ");
+                    string ch = Console.ReadLine();
+
+                    if (ch == "1")
+                    {
+                        Console.Write("Customer ID: "); int cid = int.Parse(Console.ReadLine());
+                        Console.Write("Name: "); string nm = Console.ReadLine();
+                        Console.Write("Phone: "); string ph = Console.ReadLine();
+                        Console.Write("Email: "); string mail = Console.ReadLine();
+                        db.ExecuteNonQuery("INSERT INTO Customerss (CustID, CustName, Phone, MailID) VALUES (@id,@name,@phone,@mail)",
+                            new Dictionary<string, object> { { "@id", cid }, { "@name", nm }, { "@phone", ph }, { "@mail", mail } });
+                        Console.WriteLine("Customer added.");
+                    }
+                    else if (ch == "2")
+                    {
+                        Console.Write("Name: "); string tn = Console.ReadLine();
+                        Console.Write("Source: "); string src = Console.ReadLine();
+                        Console.Write("Destination: "); string dest = Console.ReadLine();
+                        Console.Write("Departure (yyyy-MM-dd HH:mm): "); DateTime dep = DateTime.Parse(Console.ReadLine());
+                        Console.Write("Arrival (yyyy-MM-dd HH:mm): "); DateTime arr = DateTime.Parse(Console.ReadLine());
+                        Console.Write("Total seats: "); int tot = int.Parse(Console.ReadLine());
+                        trainSvc.AddTrain(tn, src, dest, dep, arr, tot);
+                    }
+                    else if (ch == "3")
+                    {
+                        Console.Write("TrainID to delete: "); int tid = int.Parse(Console.ReadLine());
+                        trainSvc.DeleteTrain(tid);
+                    }
+                    else if (ch == "4") trainSvc.ViewAllTrains();
+                    else if (ch == "5")
+                    {
+                        Console.Write("TrainID: "); int tid = int.Parse(Console.ReadLine());
+                        Console.Write("ClassName: "); string cls = Console.ReadLine();
+                        Console.Write("SeatCount: "); int sc = int.Parse(Console.ReadLine());
+                        Console.Write("Fare: "); decimal fare = decimal.Parse(Console.ReadLine());
+                        classSvc.AddTrainClass(tid, cls, sc, fare);
+                    }
+                    else if (ch == "6") classSvc.ViewTrainClasses();
+                    else if (ch == "7") ViewAllReservations();
+                    else if (ch == "8") ViewAllCancellations();
+                    else if (ch == "9") break;
+                    else Console.WriteLine("Invalid choice.");
                 }
-                else
+                else if (role == "user")
                 {
                     Console.WriteLine("\n--- User Menu ---");
                     Console.WriteLine("1. Book Ticket");
-                    Console.WriteLine("2. Cancel Ticket");
-                    Console.WriteLine("3. View Ticket");
+                    Console.WriteLine("2. Print Ticket");
+                    Console.WriteLine("3. Cancel Ticket");
                     Console.WriteLine("4. Exit");
+                    Console.Write("Choose: ");
+                    string ch = Console.ReadLine();
+
+                    if (ch == "1")
+                    {
+                        Console.Write("Booking ID: "); int bid = int.Parse(Console.ReadLine());
+                        Console.Write("Customer ID: "); int cid = int.Parse(Console.ReadLine());
+                        Console.Write("Customer Name: "); string cname = Console.ReadLine();
+                        Console.Write("Train ID: "); int tid = int.Parse(Console.ReadLine());
+                        Console.Write("Travel Date (yyyy-MM-dd): "); DateTime tdate = DateTime.Parse(Console.ReadLine());
+                        Console.Write("Class: "); string cls = Console.ReadLine();
+                        Console.Write("Seats: "); int seats = int.Parse(Console.ReadLine());
+                        resSvc.BookTicket(bid, cid, cname, tid, tdate, cls, seats);
+                    }
+                    else if (ch == "2")
+                    {
+                        Console.Write("Booking ID: "); int bid = int.Parse(Console.ReadLine());
+                        resSvc.PrintTicket(bid);
+                    }
+                    else if (ch == "3")
+                    {
+                        Console.Write("Booking ID to cancel: "); int bid = int.Parse(Console.ReadLine());
+                        cancelSvc.CancelTicket(bid);
+                    }
+                    else if (ch == "4") break;
+                    else Console.WriteLine("Invalid choice.");
+                }
+            }
+        }
+        static void ViewAllReservations()
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string query = @"SELECT BookingID, CustNo, CustName, TrainID, TravelDate, Class, SeatsBooked, TotalCost, BookingDate
+                                 FROM Reservation";
+                SqlDataAdapter da = new SqlDataAdapter(query, con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                if (dt.Rows.Count == 0)
+                {
+                    Console.WriteLine("No reservations found.");
+                    return;
                 }
 
-                Console.Write("Choose: ");
-                string choice = Console.ReadLine();
-
-                // ---- Admin actions ----
-                if (role == "admin")
+                Console.WriteLine("\nAll Reservations:");
+                Console.WriteLine("BookingID | CustNo | CustName | TrainID | TravelDate | Class | Seats | TotalCost | BookingDate");
+                foreach (DataRow row in dt.Rows)
                 {
-                    switch (choice)
-                    {
-                        case "1":
-                            Console.Write("Customer ID: ");
-                            int cid = int.Parse(Console.ReadLine());
-                            Console.Write("Name: ");
-                            string name = Console.ReadLine();
-                            Console.Write("Phone: ");
-                            string phone = Console.ReadLine();
-                            Console.Write("Email: ");
-                            string mail = Console.ReadLine();
-                            custService.RegisterCustomer(cid, name, phone, mail);
-                            break;
+                    Console.WriteLine($"{row["BookingID"],-9} | {row["CustNo"],-6} | {row["CustName"],-18} | {row["TrainID"],-7} | {Convert.ToDateTime(row["TravelDate"]):yyyy-MM-dd} | {row["Class"],-7} | {row["SeatsBooked"],-5} | ₹{row["TotalCost"],-9} | {Convert.ToDateTime(row["BookingDate"]):yyyy-MM-dd}");
+                }
+            }
+        }
 
-                        case "2":
-                            Console.Write("Train No: ");
-                            int tno = int.Parse(Console.ReadLine());
-                            Console.Write("Train Name: ");
-                            string tname = Console.ReadLine();
-                            Console.Write("Class: ");
-                            string tclass = Console.ReadLine();
-                            Console.Write("Cost per seat: ");
-                            decimal cost = decimal.Parse(Console.ReadLine());
-                            trainService.AddTrain(tno, tname, tclass, cost);
-                            break;
+        static void ViewAllCancellations()
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string query = @"SELECT c.BID AS BookingID, c.TicketCancelled, c.RefundAmount, c.CancellationDate,
+                                        r.CustName, r.TrainID, r.Class, r.SeatsBooked
+                                 FROM Cancellation c
+                                 LEFT JOIN Reservation r ON c.BID = r.BookingID";
+                SqlDataAdapter da = new SqlDataAdapter(query, con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
 
-                        case "3":
-                            Console.Write("Enter Train No to delete: ");
-                            int delNo = int.Parse(Console.ReadLine());
-                            trainService.DeleteTrain(delNo);
-                            break;
-
-                        case "4":
-                            trainService.ViewAllTrains();
-                            break;
-
-                        case "5":
-                            Console.Write("Class Name: ");
-                            string cname = Console.ReadLine();
-                            Console.Write("Cost per seat: ");
-                            decimal ccost = decimal.Parse(Console.ReadLine());
-                            trainClassService.AddTrainClass(cname, ccost);
-                            break;
-
-                        case "6":
-                            trainClassService.ViewTrainClasses();
-                            break;
-
-                        case "7":
-                            bookingReport.ViewAllBookings();
-                            break;
-
-                        case "8":
-                            bookingReport.ViewAllCancellations();
-                            break;
-
-                        case "9":
-                            Console.Write("Booking ID: ");
-                            int viewId = int.Parse(Console.ReadLine());
-                            resService.PrintTicket(viewId);
-                            break;
-
-                        case "10":
-                            Console.WriteLine("Exit");
-                            return;
-
-                        default:
-                            Console.WriteLine("Invalid Option");
-                            break;
-                    }
+                if (dt.Rows.Count == 0)
+                {
+                    Console.WriteLine("No cancellations found.");
+                    return;
                 }
 
-                else
+                Console.WriteLine("\nAll Cancellations:");
+                Console.WriteLine("BookingID | TicketCancelled | RefundAmount | CancellationDate | CustName | TrainID | Class | Seats");
+                foreach (DataRow row in dt.Rows)
                 {
-                    switch (choice)
-                    {
-                        case "1":
-                            Console.Write("Booking ID: ");
-                            int bid = int.Parse(Console.ReadLine());
-                            Console.Write("Customer ID: ");
-                            int custId = int.Parse(Console.ReadLine());
-                            Console.Write("Customer Name: ");
-                            string cname = Console.ReadLine();
-                            Console.Write("Travel Date (yyyy-mm-dd): ");
-                            DateTime tdate = DateTime.Parse(Console.ReadLine());
-                            Console.Write("Class: ");
-                            string cls = Console.ReadLine();
-                            Console.Write("Seats: ");
-                            int seats = int.Parse(Console.ReadLine());
-                            resService.BookTicket(bid, custId, cname, tdate, cls, seats);
-                            break;
-
-                        case "2":
-                            Console.Write("Booking ID to cancel: ");
-                            int cancelId = int.Parse(Console.ReadLine());
-                            cancelService.CancelTicket(cancelId);
-                            break;
-
-                        case "3":
-                            Console.Write("Booking ID to view: ");
-                            int viewId = int.Parse(Console.ReadLine());
-                            resService.PrintTicket(viewId);
-                            break;
-
-                        case "4":
-                            Console.WriteLine("Exit");
-                            return;
-
-                        default:
-                            Console.WriteLine("Invalid Option");
-                            break;
-                    }
+                    Console.WriteLine($"{row["BookingID"],-9} | {row["TicketCancelled"],-15} | ₹{row["RefundAmount"],-11} | {Convert.ToDateTime(row["CancellationDate"]):yyyy-MM-dd} | {row["CustName"],-18} | {row["TrainID"],-7} | {row["Class"],-7} | {row["SeatsBooked"],-5}");
                 }
             }
         }
