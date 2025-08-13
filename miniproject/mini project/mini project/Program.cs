@@ -5,6 +5,229 @@ using System.Data.SqlClient;
 
 namespace RailwayReservationSystem
 {
+    class Program
+    {
+        private static readonly string connectionString = "Server=ICS-LT-7Z33D64\\SQLEXPRESS01;Database=railwaydbb;user id=sa;password=Monalipatnaik@123;";
+
+        static void Main()
+        {
+            var db = new DbHelper();
+            var trainSvc = new TrainService();
+            var classSvc = new TrainClassService();
+            var resSvc = new ReservationService();
+            var cancelSvc = new CancellationService();
+
+            while (true) // Outer loop for login/logout
+            {
+                Console.Write("admin/user: ");
+                string role = Console.ReadLine()?.Trim().ToLower() ?? "user";
+                Console.Write("Enter password: ");
+                string pwd = Console.ReadLine();
+                if ((role == "admin" && pwd != "admin123") || (role == "user" && pwd != "user123"))
+                {
+                    Console.WriteLine("Access Denied");
+                    return;
+                }
+
+                bool loggedIn = true;
+                while (loggedIn)
+                {
+                    if (role == "admin")
+                    {
+                        Console.WriteLine("\n--- Admin Menu ---");
+                        Console.WriteLine("1. Register Customer");
+                        Console.WriteLine("2. Add Train");
+                        Console.WriteLine("3. Delete Train");
+                        Console.WriteLine("4. View All Trains");
+                        Console.WriteLine("5. Add Train Class");
+                        Console.WriteLine("6. View Train Classes");
+                        Console.WriteLine("7. View All Reservations");
+                        Console.WriteLine("8. View All Cancellations");
+                        Console.WriteLine("9. Logout");
+                        Console.WriteLine("10. Exit");
+                        Console.Write("Choose: ");
+                        string ch = Console.ReadLine();
+
+                        if (ch == "1")
+                        {
+                            Console.Write("Customer ID: "); int cid = int.Parse(Console.ReadLine());
+                            Console.Write("Name: "); string nm = Console.ReadLine();
+                            Console.Write("Phone: "); string ph = Console.ReadLine();
+                            Console.Write("Email: "); string mail = Console.ReadLine();
+                            db.ExecuteNonQuery("INSERT INTO Customerss (CustID, CustName, Phone, MailID) VALUES (@id,@name,@phone,@mail)",
+                                new Dictionary<string, object> { { "@id", cid }, { "@name", nm }, { "@phone", ph }, { "@mail", mail } });
+                            Console.WriteLine("Customer added.");
+                        }
+                        else if (ch == "2")
+                        {
+                            Console.Write("Name: "); string tn = Console.ReadLine();
+                            Console.Write("Source: "); string src = Console.ReadLine();
+                            Console.Write("Destination: "); string dest = Console.ReadLine();
+                            Console.Write("Departure (yyyy-MM-dd HH:mm): "); DateTime dep = DateTime.Parse(Console.ReadLine());
+                            Console.Write("Arrival (yyyy-MM-dd HH:mm): "); DateTime arr = DateTime.Parse(Console.ReadLine());
+                            Console.Write("Total seats: "); int tot = int.Parse(Console.ReadLine());
+                            trainSvc.AddTrain(tn, src, dest, dep, arr, tot);
+                        }
+                        else if (ch == "3")
+                        {
+                            Console.Write("TrainID to delete: "); int tid = int.Parse(Console.ReadLine());
+                            trainSvc.DeleteTrain(tid);
+                        }
+                        else if (ch == "4") trainSvc.ViewAllTrains();
+                        else if (ch == "5")
+                        {
+                            Console.Write("TrainID: "); int tid = int.Parse(Console.ReadLine());
+                            Console.Write("ClassName: "); string cls = Console.ReadLine();
+                            Console.Write("SeatCount: "); int sc = int.Parse(Console.ReadLine());
+                            Console.Write("Fare: "); decimal fare = decimal.Parse(Console.ReadLine());
+                            classSvc.AddTrainClass(tid, cls, sc, fare);
+                        }
+                        else if (ch == "6") classSvc.ViewTrainClasses();
+                        else if (ch == "7") ViewAllReservations();
+                        else if (ch == "8") ViewAllCancellations();
+                        else if (ch == "9")
+                        {
+                            Console.WriteLine("Logged out successfully.");
+                            loggedIn = false;
+                            Console.Clear();
+                        }
+                        else if (ch == "10")
+                        {
+                            Console.WriteLine("Exiting program...");
+                            return; // Terminate the program
+                        }
+                        else Console.WriteLine("Invalid choice.");
+                    }
+                    else if (role == "user")
+                    {
+                        Console.WriteLine("\n--- User Menu ---");
+                        Console.WriteLine("1. Book Ticket");
+                        Console.WriteLine("2. Print Ticket");
+                        Console.WriteLine("3. Cancel Ticket");
+                        Console.WriteLine("4. Logout");
+                        Console.WriteLine("5. Show Registered Customers");
+                        Console.WriteLine("6. Exit");
+                        Console.Write("Choose: ");
+                        string ch = Console.ReadLine();
+
+                        if (ch == "1")
+                        {
+                            Console.Write("Booking ID: "); int bid = int.Parse(Console.ReadLine());
+                            Console.Write("Customer ID: "); int cid = int.Parse(Console.ReadLine());
+                            Console.Write("Customer Name: "); string cname = Console.ReadLine();
+                            Console.Write("Train ID: "); int tid = int.Parse(Console.ReadLine());
+                            Console.Write("Travel Date (yyyy-MM-dd): "); DateTime tdate = DateTime.Parse(Console.ReadLine());
+                            Console.Write("Class: "); string cls = Console.ReadLine();
+                            Console.Write("Seats: "); int seats = int.Parse(Console.ReadLine());
+                            resSvc.BookTicket(bid, cid, cname, tid, tdate, cls, seats);
+                        }
+                        else if (ch == "2")
+                        {
+                            Console.Write("Booking ID: "); int bid = int.Parse(Console.ReadLine());
+                            resSvc.PrintTicket(bid);
+                        }
+                        else if (ch == "3")
+                        {
+                            Console.Write("Booking ID to cancel: "); int bid = int.Parse(Console.ReadLine());
+                            cancelSvc.CancelTicket(bid);
+                        }
+                        else if (ch == "4")
+                        {
+                            Console.WriteLine("Logged out successfully.");
+                            loggedIn = false;
+                            Console.Clear();
+                        }
+                        else if (ch == "5")
+                        {
+                            ViewAllCustomers();
+                        }
+                        else if (ch == "6")
+                        {
+                            Console.WriteLine("Exiting program...");
+                            return; // Terminate the program
+                        }
+                        else Console.WriteLine("Invalid choice.");
+                    }
+                }
+            }
+        }
+        static void ViewAllReservations()
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string query = @"SELECT BookingID, CustNo, CustName, TrainID, TravelDate, Class, SeatsBooked, TotalCost, BookingDate
+                                 FROM Reservation";
+                SqlDataAdapter da = new SqlDataAdapter(query, con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                if (dt.Rows.Count == 0)
+                {
+                    Console.WriteLine("No reservations found.");
+                    return;
+                }
+
+                Console.WriteLine("\nAll Reservations:");
+                Console.WriteLine("BookingID | CustNo | CustName | TrainID | TravelDate | Class | Seats | TotalCost | BookingDate");
+                foreach (DataRow row in dt.Rows)
+                {
+                    Console.WriteLine($"{row["BookingID"],-9} | {row["CustNo"],-6} | {row["CustName"],-18} | {row["TrainID"],-7} | {Convert.ToDateTime(row["TravelDate"]):yyyy-MM-dd} | {row["Class"],-7} | {row["SeatsBooked"],-5} | ₹{row["TotalCost"],-9} | {Convert.ToDateTime(row["BookingDate"]):yyyy-MM-dd}");
+                }
+            }
+        }
+
+        static void ViewAllCancellations()
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string query = @"SELECT c.BID AS BookingID, c.TicketCancelled, c.RefundAmount, c.CancellationDate,
+                                        r.CustName, r.TrainID, r.Class, r.SeatsBooked
+                                 FROM Cancellation c
+                                 LEFT JOIN Reservation r ON c.BID = r.BookingID";
+                SqlDataAdapter da = new SqlDataAdapter(query, con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                if (dt.Rows.Count == 0)
+                {
+                    Console.WriteLine("No cancellations found.");
+                    return;
+                }
+
+                Console.WriteLine("\nAll Cancellations:");
+                Console.WriteLine("BookingID | TicketCancelled | RefundAmount | CancellationDate | CustName | TrainID | Class | Seats");
+                foreach (DataRow row in dt.Rows)
+                {
+                    Console.WriteLine($"{row["BookingID"],-9} | {row["TicketCancelled"],-15} | ₹{row["RefundAmount"],-11} | {Convert.ToDateTime(row["CancellationDate"]):yyyy-MM-dd} | {row["CustName"],-18} | {row["TrainID"],-7} | {row["Class"],-7} | {row["SeatsBooked"],-5}");
+                }
+            }
+        }
+
+        static void ViewAllCustomers()
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string query = @"SELECT CustID, CustName, Phone, MailID FROM Customerss";
+                SqlDataAdapter da = new SqlDataAdapter(query, con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                if (dt.Rows.Count == 0)
+                {
+                    Console.WriteLine("No customers found.");
+                    return;
+                }
+
+                Console.WriteLine("\nAll Registered Customers:");
+                Console.WriteLine("CustID | CustName | Phone      | MailID");
+                foreach (DataRow row in dt.Rows)
+                {
+                    Console.WriteLine($"{row["CustID"],-6} | {row["CustName"],-18} | {row["Phone"],-10} | {row["MailID"]}");
+                }
+            }
+        }
+    }
+
     public class DbHelper
     {
         public string ConnectionString { get; } = "Server=ICS-LT-7Z33D64\\SQLEXPRESS01;Database=railwaydbb;user id=sa;password=Monalipatnaik@123;";
@@ -207,7 +430,7 @@ namespace RailwayReservationSystem
                                 }
 
                                 tx.Commit();
-                                Console.WriteLine("Booking successful. BookingID: {bookingId}, Total Fare: ₹{totalCost}");
+                                Console.WriteLine("Booking successful");
                                 return;
                             }
                         }
@@ -295,176 +518,8 @@ namespace RailwayReservationSystem
                     catch (Exception ex)
                     {
                         try { tx.Rollback(); } catch { }
-                        Console.WriteLine("Cancellation failed: " + ex.Message);
+                        Console.WriteLine("Cancellation failed: ");
                     }
-                }
-            }
-        }
-    }
-
-    class Program
-    {
-        private static readonly string connectionString = "Server=ICS-LT-7Z33D64\\SQLEXPRESS01;Database=railwaydbb;user id=sa;password=Monalipatnaik@123;";
-
-        static void Main()
-        {
-            var db = new DbHelper();
-            var trainSvc = new TrainService();
-            var classSvc = new TrainClassService();
-            var resSvc = new ReservationService();
-            var cancelSvc = new CancellationService();
-
-            Console.Write("admin/user: ");
-            string role = Console.ReadLine()?.Trim().ToLower() ?? "user";
-            Console.Write("Enter password: ");
-            string pwd = Console.ReadLine();
-            if ((role == "admin" && pwd != "admin123") || (role == "user" && pwd != "user123"))
-            {
-                Console.WriteLine("Access Denied");
-                return;
-            }
-
-            while (true)
-            {
-                if (role == "admin")
-                {
-                    Console.WriteLine("\n--- Admin Menu ---");
-                    Console.WriteLine("1. Register Customer");
-                    Console.WriteLine("2. Add Train");
-                    Console.WriteLine("3. Delete Train");
-                    Console.WriteLine("4. View All Trains");
-                    Console.WriteLine("5. Add Train Class");
-                    Console.WriteLine("6. View Train Classes");
-                    Console.WriteLine("7. View All Reservations");
-                    Console.WriteLine("8. View All Cancellations");
-                    Console.WriteLine("9. Exit");
-                    Console.Write("Choose: ");
-                    string ch = Console.ReadLine();
-
-                    if (ch == "1")
-                    {
-                        Console.Write("Customer ID: "); int cid = int.Parse(Console.ReadLine());
-                        Console.Write("Name: "); string nm = Console.ReadLine();
-                        Console.Write("Phone: "); string ph = Console.ReadLine();
-                        Console.Write("Email: "); string mail = Console.ReadLine();
-                        db.ExecuteNonQuery("INSERT INTO Customerss (CustID, CustName, Phone, MailID) VALUES (@id,@name,@phone,@mail)",
-                            new Dictionary<string, object> { { "@id", cid }, { "@name", nm }, { "@phone", ph }, { "@mail", mail } });
-                        Console.WriteLine("Customer added.");
-                    }
-                    else if (ch == "2")
-                    {
-                        Console.Write("Name: "); string tn = Console.ReadLine();
-                        Console.Write("Source: "); string src = Console.ReadLine();
-                        Console.Write("Destination: "); string dest = Console.ReadLine();
-                        Console.Write("Departure (yyyy-MM-dd HH:mm): "); DateTime dep = DateTime.Parse(Console.ReadLine());
-                        Console.Write("Arrival (yyyy-MM-dd HH:mm): "); DateTime arr = DateTime.Parse(Console.ReadLine());
-                        Console.Write("Total seats: "); int tot = int.Parse(Console.ReadLine());
-                        trainSvc.AddTrain(tn, src, dest, dep, arr, tot);
-                    }
-                    else if (ch == "3")
-                    {
-                        Console.Write("TrainID to delete: "); int tid = int.Parse(Console.ReadLine());
-                        trainSvc.DeleteTrain(tid);
-                    }
-                    else if (ch == "4") trainSvc.ViewAllTrains();
-                    else if (ch == "5")
-                    {
-                        Console.Write("TrainID: "); int tid = int.Parse(Console.ReadLine());
-                        Console.Write("ClassName: "); string cls = Console.ReadLine();
-                        Console.Write("SeatCount: "); int sc = int.Parse(Console.ReadLine());
-                        Console.Write("Fare: "); decimal fare = decimal.Parse(Console.ReadLine());
-                        classSvc.AddTrainClass(tid, cls, sc, fare);
-                    }
-                    else if (ch == "6") classSvc.ViewTrainClasses();
-                    else if (ch == "7") ViewAllReservations();
-                    else if (ch == "8") ViewAllCancellations();
-                    else if (ch == "9") break;
-                    else Console.WriteLine("Invalid choice.");
-                }
-                else if (role == "user")
-                {
-                    Console.WriteLine("\n--- User Menu ---");
-                    Console.WriteLine("1. Book Ticket");
-                    Console.WriteLine("2. Print Ticket");
-                    Console.WriteLine("3. Cancel Ticket");
-                    Console.WriteLine("4. Exit");
-                    Console.Write("Choose: ");
-                    string ch = Console.ReadLine();
-
-                    if (ch == "1")
-                    {
-                        Console.Write("Booking ID: "); int bid = int.Parse(Console.ReadLine());
-                        Console.Write("Customer ID: "); int cid = int.Parse(Console.ReadLine());
-                        Console.Write("Customer Name: "); string cname = Console.ReadLine();
-                        Console.Write("Train ID: "); int tid = int.Parse(Console.ReadLine());
-                        Console.Write("Travel Date (yyyy-MM-dd): "); DateTime tdate = DateTime.Parse(Console.ReadLine());
-                        Console.Write("Class: "); string cls = Console.ReadLine();
-                        Console.Write("Seats: "); int seats = int.Parse(Console.ReadLine());
-                        resSvc.BookTicket(bid, cid, cname, tid, tdate, cls, seats);
-                    }
-                    else if (ch == "2")
-                    {
-                        Console.Write("Booking ID: "); int bid = int.Parse(Console.ReadLine());
-                        resSvc.PrintTicket(bid);
-                    }
-                    else if (ch == "3")
-                    {
-                        Console.Write("Booking ID to cancel: "); int bid = int.Parse(Console.ReadLine());
-                        cancelSvc.CancelTicket(bid);
-                    }
-                    else if (ch == "4") break;
-                    else Console.WriteLine("Invalid choice.");
-                }
-            }
-        }
-        static void ViewAllReservations()
-        {
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                string query = @"SELECT BookingID, CustNo, CustName, TrainID, TravelDate, Class, SeatsBooked, TotalCost, BookingDate
-                                 FROM Reservation";
-                SqlDataAdapter da = new SqlDataAdapter(query, con);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-
-                if (dt.Rows.Count == 0)
-                {
-                    Console.WriteLine("No reservations found.");
-                    return;
-                }
-
-                Console.WriteLine("\nAll Reservations:");
-                Console.WriteLine("BookingID | CustNo | CustName | TrainID | TravelDate | Class | Seats | TotalCost | BookingDate");
-                foreach (DataRow row in dt.Rows)
-                {
-                    Console.WriteLine($"{row["BookingID"],-9} | {row["CustNo"],-6} | {row["CustName"],-18} | {row["TrainID"],-7} | {Convert.ToDateTime(row["TravelDate"]):yyyy-MM-dd} | {row["Class"],-7} | {row["SeatsBooked"],-5} | ₹{row["TotalCost"],-9} | {Convert.ToDateTime(row["BookingDate"]):yyyy-MM-dd}");
-                }
-            }
-        }
-
-        static void ViewAllCancellations()
-        {
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                string query = @"SELECT c.BID AS BookingID, c.TicketCancelled, c.RefundAmount, c.CancellationDate,
-                                        r.CustName, r.TrainID, r.Class, r.SeatsBooked
-                                 FROM Cancellation c
-                                 LEFT JOIN Reservation r ON c.BID = r.BookingID";
-                SqlDataAdapter da = new SqlDataAdapter(query, con);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-
-                if (dt.Rows.Count == 0)
-                {
-                    Console.WriteLine("No cancellations found.");
-                    return;
-                }
-
-                Console.WriteLine("\nAll Cancellations:");
-                Console.WriteLine("BookingID | TicketCancelled | RefundAmount | CancellationDate | CustName | TrainID | Class | Seats");
-                foreach (DataRow row in dt.Rows)
-                {
-                    Console.WriteLine($"{row["BookingID"],-9} | {row["TicketCancelled"],-15} | ₹{row["RefundAmount"],-11} | {Convert.ToDateTime(row["CancellationDate"]):yyyy-MM-dd} | {row["CustName"],-18} | {row["TrainID"],-7} | {row["Class"],-7} | {row["SeatsBooked"],-5}");
                 }
             }
         }

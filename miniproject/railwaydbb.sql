@@ -53,16 +53,18 @@ CREATE TABLE dbo.Reservation (
     CONSTRAINT FK_Reservation_Customer FOREIGN KEY (CustNo) REFERENCES dbo.Customerss(CustID),
     CONSTRAINT FK_Reservation_Train FOREIGN KEY (TrainID) REFERENCES dbo.Train(TrainID)
 );
+select *from dbo.Reservation
 
 -- Cancellation
-IF OBJECT_ID('dbo.Cancellation','U') IS NULL
-CREATE TABLE dbo.Cancellation (
-    BID INT PRIMARY KEY,
+IF OBJECT_ID('dbo.Cancellations','U') IS NULL
+CREATE TABLE dbo.Cancellations (
+    BookingID INT PRIMARY KEY,
     TicketCancelled BIT,
     RefundAmount DECIMAL(10,2),
     CancellationDate DATE,
-    CONSTRAINT FK_Cancellation_Reservation FOREIGN KEY (BID) REFERENCES dbo.Reservation(BookingID)
+    CONSTRAINT FK_Cancellation_Reservations FOREIGN KEY (BookingID) REFERENCES dbo.Reservation(BookingID)
 );
+
 
 -- sample data (only inserts if not exist)
 IF NOT EXISTS (SELECT 1 FROM dbo.Customerss WHERE CustID = 1)
@@ -90,4 +92,6 @@ BEGIN
     (2, 'AC 3 Tier', 120, 800.00),
     (3, 'Sleeper', 250, 300.00),
     (3, 'AC Chair Car', 100, 500.00);
+	INSERT INTO  dbo.Cancellation VALUES (1001, 1, 500, '2025-08-11')
+
 END
