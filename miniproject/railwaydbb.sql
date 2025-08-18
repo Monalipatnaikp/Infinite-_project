@@ -95,3 +95,8 @@ BEGIN
 	INSERT INTO  dbo.Cancellation VALUES (1001, 1, 500, '2025-08-11')
 
 END
+select *from dbo.Customerss
+select *from dbo.Train
+select *from dbo.TrainClasses
+select *from dbo.Reservation
+select *from dbo.Cancellation
