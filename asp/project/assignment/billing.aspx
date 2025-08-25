@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Add Bills" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Billing.aspx.cs" Inherits="ElectricityBillingProject.Billing" %>
+﻿
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <h2>Add Electricity Bills</h2>

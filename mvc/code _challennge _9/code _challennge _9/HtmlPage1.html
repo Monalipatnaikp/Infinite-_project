@@ -1,0 +1,11 @@
+﻿@model IEnumerable<YourProjectNamespace.Models.Customer>
+
+    <h2>Customers in Germany</h2>
+    <ul>
+        @foreach (var customer in Model)
+        {
+        <li>
+            <strong>@customer.CompanyName</strong> — @customer.ContactName (@customer.City)
+        </li>
+        }
+    </ul>

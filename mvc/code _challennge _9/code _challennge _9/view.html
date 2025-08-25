@@ -1,0 +1,15 @@
+﻿@model YourProjectNamespace.Models.Customer
+
+<h2>Customer Details for Order</h2>
+
+@if (Model != null)
+{
+<p><strong>Company:</strong> @Model.CompanyName</p>
+<p><strong>Contact:</strong> @Model.ContactName</p>
+<p><strong>Country:</strong> @Model.Country</p>
+<p><strong>City:</strong> @Model.City</p>
+}
+else
+{
+<p>No customer found for this order.</p>
+}

@@ -2,7 +2,7 @@
 using System.Data.SqlClient;
 using System.Configuration;
 
-namespace DBUtility
+namespace assignment
 {
     public class DBHandler
     {
